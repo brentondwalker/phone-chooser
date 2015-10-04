@@ -1,0 +1,40 @@
+phone-chooser
+-------------
+
+This program has price lists from several carriers for several phone number
+prefixes.  Given a number, it deduces the prefix from the ones it has seen,
+and prints out the best carrier(s) and price for that prefix.
+
+NOTES:
+The only prefixes the program knows are the ones it sees in the carrier
+price lists.  But the list of known prefixes is a global thing, so
+we just keep track of the best price for each known prefix, we discard
+the price info when it isn't the best.  The benefit is that we don't have
+to iterate over all carriers' price lists when hunting the best price.
+The drawback is that we can't support removing a carrier or having a
+carrier raise a price (lowering a price is OK).
+
+A natural data structure for this is a prefix trie, but I used two hash
+tables instead.  One is the price table that maps prefix to best price,
+and the other is a HashSet that contains all prefixes of the prefixes.
+If a prefix appers in that set, even if it doesn't have a price, it is
+a prefix of a prefix that does have a price.
+
+
+BUILD & RUN:
+
+ant jar
+java -jar phone-chooser.jar 1234567890 4631984387 46732937498 99999999
+
+or to run without a jar file:
+
+ant
+java -cp bin CarrierFinder 1234567890 4631984387 46732937498 99999999
+
+
+RUN UNIT TESTS:
+
+ant test
+
+
+

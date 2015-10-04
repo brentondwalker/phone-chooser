@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<project basedir="." default="build" name="phone-chooser">
+    <property environment="env"/>
+    <property name="junit.output.dir" value="junit"/>
+    <property name="target" value="1.7"/>
+    <property name="source" value="1.7"/>
+    <path id="JUnit 4.libraryclasspath">
+        <pathelement location="lib/junit.jar"/>
+        <pathelement location="lib/org.hamcrest.core_1.3.0.v201303031735.jar"/>
+    </path>
+    <path id="phone-chooser.classpath">
+        <pathelement location="bin"/>
+        <path refid="JUnit 4.libraryclasspath"/>
+    </path>
+    <target name="clean">
+        <delete dir="bin"/>
+        <delete dir="junit"/>
+        <delete file="MANIFEST.MF"/>
+        <delete file="phone-chooser.jar"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target name="build">
+        <mkdir dir="bin"/>
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <src path="test"/>
+            <classpath refid="phone-chooser.classpath"/>
+        </javac>
+    </target>
+
+    <target name="jar" depends="build">
+      <delete file="phone-chooser.jar"/>
+      <delete file="MANIFEST.MF"/>
+      <manifest file="MANIFEST.MF">
+        <attribute name="Manifest-Version" value="1.0"/>
+        <attribute name="Main-Class" value="CarrierFinder"/>
+        <attribute name="Class-Path" value="bin"/>
+      </manifest>
+      <jar destfile="phone-chooser.jar" basedir="bin" includes="*.class" manifest="MANIFEST.MF"/>
+    </target>
+
+    <target name="test" depends="build,PhoneNumberTest,BestPriceTableTest"/>
+    <target name="PhoneNumberTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="PhoneNumberTest" todir="${junit.output.dir}"/>
+            <classpath refid="phone-chooser.classpath"/>
+        </junit>
+    </target>
+    <target name="BestPriceTableTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="BestPriceTableTest" todir="${junit.output.dir}"/>
+            <classpath refid="phone-chooser.classpath"/>
+        </junit>
+    </target>
+    <target name="junitreport">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
+    </target>
+</project>
